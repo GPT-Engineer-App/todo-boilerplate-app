@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { addTask, deleteTask, toggleTaskCompletion } from "../../service/crud/todoService";
 import { Container, VStack, HStack, Input, Button, Text, Checkbox, IconButton } from "@chakra-ui/react";
 import { FaTrash } from "react-icons/fa";
 
@@ -6,20 +7,19 @@ const Index = () => {
   const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState("");
 
-  const addTask = () => {
-    if (task.trim() !== "") {
-      setTasks([...tasks, { text: task, completed: false }]);
-      setTask("");
-    }
+  const handleAddTask = () => {
+    const newTasks = addTask(tasks, task);
+    setTasks(newTasks);
+    setTask("");
   };
 
-  const deleteTask = (index) => {
-    const newTasks = tasks.filter((_, i) => i !== index);
+  const handleDeleteTask = (index) => {
+    const newTasks = deleteTask(tasks, index);
     setTasks(newTasks);
   };
 
-  const toggleTaskCompletion = (index) => {
-    const newTasks = tasks.map((t, i) => (i === index ? { ...t, completed: !t.completed } : t));
+  const handleToggleTaskCompletion = (index) => {
+    const newTasks = toggleTaskCompletion(tasks, index);
     setTasks(newTasks);
   };
 
@@ -32,18 +32,18 @@ const Index = () => {
             value={task}
             onChange={(e) => setTask(e.target.value)}
           />
-          <Button onClick={addTask} colorScheme="teal">Add Task</Button>
+          <Button onClick={handleAddTask} colorScheme="teal">Add Task</Button>
         </HStack>
         <VStack spacing={2} width="100%">
           {tasks.map((t, index) => (
             <HStack key={index} width="100%" justifyContent="space-between">
-              <Checkbox isChecked={t.completed} onChange={() => toggleTaskCompletion(index)}>
+              <Checkbox isChecked={t.completed} onChange={() => handleToggleTaskCompletion(index)}>
                 <Text as={t.completed ? "s" : ""}>{t.text}</Text>
               </Checkbox>
               <IconButton
                 aria-label="Delete task"
                 icon={<FaTrash />}
-                onClick={() => deleteTask(index)}
+                onClick={() => handleDeleteTask(index)}
                 colorScheme="red"
               />
             </HStack>
